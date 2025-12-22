@@ -1,0 +1,15 @@
+:root{ --primary: #6366F1; }
+
+.back-button{
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.back-button:hover{
+  background: rgba(99,102,241,0.08);
+}

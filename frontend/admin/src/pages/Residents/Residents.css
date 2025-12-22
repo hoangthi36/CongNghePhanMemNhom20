@@ -1,0 +1,41 @@
+:root{ --primary: #6366F1; }
+
+.residents-page{
+  padding: 20px 28px;
+  margin-left: 220px; /* align with sidebar */
+}
+
+.residents-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.residents-header h2{ margin:0; color:var(--primary); }
+
+.btn{ display:inline-block; text-decoration:none; padding:8px 12px; border-radius:8px; background:var(--primary); color:#fff; font-weight:600 }
+
+.btn.small{ padding:6px 8px; font-size:0.9rem }
+
+.btn.add-btn{ background: linear-gradient(90deg,var(--primary), #7c83ff); }
+
+.btn.danger{ background: #ef4444 }
+
+.residents-table-wrap{ overflow:auto; background:transparent }
+
+.residents-table{ width:100%; border-collapse:collapse; background:#fff; border-radius:8px; box-shadow:0 8px 20px rgba(2,6,23,0.06); }
+
+.residents-table th, .residents-table td{ padding:12px 14px; text-align:left; border-bottom:1px solid #f3f4f6 }
+
+.residents-table thead th{ font-weight:700; color:#374151 }
+
+.residents-table .actions{ display:flex; gap:8px; justify-content:flex-end }
+
+.empty{ text-align:center; color:#6b7280; padding:18px }
+
+@media (max-width: 720px){
+  .residents-page{ margin-left:0; margin-top:56px; padding:12px }
+  .residents-table th, .residents-table td{ padding:10px }
+}

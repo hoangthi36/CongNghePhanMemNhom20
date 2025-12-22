@@ -1,0 +1,21 @@
+:root{ --primary: #6366F1; }
+
+.resident-form-page{
+  padding: 20px 28px;
+  margin-left: 220px;
+}
+
+.form-top{ display:flex; align-items:center; gap:12px; margin-bottom:16px }
+.form-top h2{ margin:0; color:var(--primary) }
+
+.resident-form{ display:flex; flex-direction:column; gap:12px; max-width:680px; background:#fff; padding:16px; border-radius:10px; box-shadow:0 8px 20px rgba(2,6,23,0.06) }
+
+.resident-form label{ display:flex; flex-direction:column; gap:8px; font-weight:600 }
+
+.resident-form input{ padding:10px 12px; border-radius:8px; border:1px solid #e5e7eb; outline:none }
+
+.form-actions{ display:flex; gap:8px; justify-content:flex-end }
+
+.btn.save{ background: linear-gradient(90deg,var(--primary), #7c83ff); color:#fff; padding:8px 12px; border-radius:8px; border:none; font-weight:700 }
+
+@media (max-width:720px){ .resident-form-page{ margin-left:0; margin-top:56px; padding:12px } }

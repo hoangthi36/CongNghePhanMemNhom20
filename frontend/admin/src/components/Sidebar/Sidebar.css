@@ -1,0 +1,128 @@
+:root{
+	--primary: #6366F1;
+	--bg: #ffffff;
+	--muted: #6b7280;
+}
+
+.admin-sidebar{
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 220px;
+	background: linear-gradient(180deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02));
+	border-right: 1px solid rgba(15,23,42,0.04);
+	padding: 18px 12px;
+	box-sizing: border-box;
+	z-index: 40;
+}
+
+.sidebar-inner{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.brand{
+	font-weight: 700;
+	color: var(--primary);
+	font-size: 1.05rem;
+	padding: 6px 10px;
+	margin-bottom: 12px;
+}
+
+.nav{
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.nav-section{
+	padding: 6px 4px;
+	display:flex;
+	flex-direction:column;
+	gap:4px;
+}
+
+.nav-section-title{
+	font-size:0.78rem;
+	color:var(--muted);
+	padding:6px 10px;
+	font-weight:700;
+}
+
+.nav-child{
+	padding-left: 18px;
+	font-weight:600;
+}
+
+.nav-section-toggle{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:8px;
+	background:transparent;
+	border:none;
+	padding:8px 10px;
+	font-weight:700;
+	color: #111827;
+	cursor:pointer;
+	border-radius:8px;
+}
+
+.nav-section-toggle:hover{ background: rgba(99,102,241,0.04) }
+
+.chev{ transition: transform .12s ease }
+.chev.open{ transform: rotate(180deg) }
+
+/* hide children when collapsed when JS is disabled keep them hidden by default - but we render conditionally in JSX */
+.nav-section .nav-child{ display:block }
+
+.nav-item{
+	display: block;
+	color: #111827;
+	padding: 10px 12px;
+	border-radius: 8px;
+	text-decoration: none;
+	font-weight: 600;
+	transition: background .12s, color .12s;
+}
+
+.nav-item:hover{
+	background: rgba(99,102,241,0.08);
+}
+
+.nav-item.active{
+	background: var(--primary);
+	color: #fff;
+}
+
+/* Responsive: collapse to top bar on small screens */
+@media (max-width: 720px){
+	.admin-sidebar{
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+		height: 56px;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		padding: 8px 12px;
+	}
+	.sidebar-inner{
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+	.nav{
+		flex-direction: row;
+		gap: 8px;
+		align-items: center;
+	}
+	.nav-item{
+		padding: 8px 10px;
+		font-size: 0.92rem;
+	}
+}

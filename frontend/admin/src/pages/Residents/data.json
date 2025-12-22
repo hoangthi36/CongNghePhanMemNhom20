@@ -1,0 +1,90 @@
+[
+  {
+    "_id": "68efc1195ffbd315ee8eccf2",
+    "namehousehold": "Ho Nguyen",
+    "address": "12 Nguyen Trai, Ha Noi",
+    "namehead": "Nguyen Van A",
+    "identification_head": "ID1001",
+    "members": [
+      {
+        "_id": "6948bd797b63a1bacf3d0d3e",
+        "identification": "ID1002",
+        "name": "Nguyen Thi B",
+        "relationship": "vo"
+      },
+      {
+        "_id": "6948bd797b63a1bacf3d0d3f",
+        "identification": "ID1003",
+        "name": "Nguyen Van C",
+        "relationship": "con"
+      }
+    ],
+    "__v": 0
+  },
+  {
+    "_id": "68efc1195ffbd315ee8eccf3",
+    "namehousehold": "Ho Tran",
+    "address": "45 Le Loi, Da Nang",
+    "namehead": "Tran Van D",
+    "identification_head": "ID2001",
+    "members": [
+      {
+        "_id": "6948bd797b63a1bacf3d0d40",
+        "identification": "ID2002",
+        "name": "Le Thi E",
+        "relationship": "vo"
+      },
+      {
+        "_id": "6948bd797b63a1bacf3d0d41",
+        "identification": "ID2003",
+        "name": "Tran Van F",
+        "relationship": "con"
+      }
+    ],
+    "__v": 0
+  },
+  {
+    "_id": "68efc1195ffbd315ee8eccf4",
+    "namehousehold": "Ho Le",
+    "address": "78 Hai Ba Trung, Ho Chi Minh",
+    "namehead": "Le Van G",
+    "identification_head": "ID3001",
+    "members": [
+      {
+        "_id": "6948bd797b63a1bacf3d0d42",
+        "identification": "ID3002",
+        "name": "Pham Thi H",
+        "relationship": "vo"
+      },
+      {
+        "_id": "6948bd797b63a1bacf3d0d43",
+        "identification": "ID3003",
+        "name": "Le Van I",
+        "relationship": "con"
+      },
+      {
+        "_id": "6948bd797b63a1bacf3d0d44",
+        "identification": "ID3004",
+        "name": "Le Thi K",
+        "relationship": "con"
+      }
+    ],
+    "__v": 0
+  },
+  {
+    "_id": "68efc1195ffbd315ee8eccf5",
+    "namehousehold": "Ho Pham",
+    "address": "102 Tran Phu, Hue",
+    "namehead": "Pham Van L",
+    "identification_head": "ID4001",
+    "members": [
+      {
+        "_id": "6948bd797b63a1bacf3d0d45",
+        "identification": "ID4002",
+        "name": "Nguyen Thi M",
+        "relationship": "vo"
+      }
+    ],
+    "__v": 0
+  }
+]

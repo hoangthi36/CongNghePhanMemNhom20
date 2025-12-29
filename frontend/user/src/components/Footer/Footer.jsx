@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="footer-item">
               <span className="footer-icon">📞</span>
               <span className="footer-label">Số điện thoại:</span>
-              <a href="tel:0392907087" className="footer-value">0392907087</a>
+              <a href="tel:0392907087" className="footer-value">0000</a>
             </div>
             <div className="footer-item">
               <span className="footer-icon">🏢</span>

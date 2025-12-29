@@ -35,8 +35,21 @@ body {
 
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 20px 20px 20px 12px;
   background-color: #ffffff;
+}
+
+/* When the fixed admin sidebar is visible, offset the main content */
+.with-sidebar .content {
+  margin-left: 240px; /* sidebar width (220) + padding */
+}
+
+@media (max-width: 720px) {
+  /* Sidebar collapses to top bar on small screens — remove left margin and add top offset */
+  .with-sidebar .content {
+    margin-left: 0;
+    margin-top: 56px;
+  }
 }
 
 button {

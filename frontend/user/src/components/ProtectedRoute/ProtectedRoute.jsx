@@ -1,11 +1,11 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../Context/AuthContext.jsx";
+import { Navigate, Outlet } from "react-router-dom";
 
+export default function ProtectedRoute() {
+  const isAuth = sessionStorage.getItem("isAuth");
 
-export default function ProtectedRoute({ children }) {
-const { user, loading } = useAuth();
-if (loading) {
-  return <div>Loading...</div>;
-}
-return user ? children : <Navigate to="/login" />;
+  if (!isAuth) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
 }

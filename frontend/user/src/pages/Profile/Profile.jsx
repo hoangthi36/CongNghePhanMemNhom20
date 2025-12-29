@@ -1,135 +1,302 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../../components/Context/AuthContext";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PassPopup from '../../components/passPopup/passPopup';
+import './Profile.css';
 
 const Profile = () => {
-  const { user, login } = useAuth();
-  const [cmnd, setCmnd] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [apartmentNumber, setApartmentNumber] = useState("");
-  const [phone, setPhone] = useState("");
-  const [toast, setToast] = useState("");
-  const [error, setError] = useState("");
+  const [userData, setUserData] = useState({
+    identification: '',
+    name: '',
+    phone: '',
+    address: '',
+    dob: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [showPassPopup, setShowPassPopup] = useState(false);
+  const [passChangeLoading, setPassChangeLoading] = useState(false);
+  const [passChangeError, setPassChangeError] = useState('');
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  // Lấy thông tin người dùng khi component mount
   useEffect(() => {
-    const fromContext = user || null;
-    const saved = fromContext || (() => {
-      try {
-        const raw = localStorage.getItem("currentUser");
-        return raw ? JSON.parse(raw) : null;
-      } catch (e) {
-        return null;
-      }
-    })();
+    fetchUserProfile();
+  }, []);
 
-    if (saved) {
-      setCmnd(saved.cmnd || "");
-      setName(saved.name || "");
-      setApartmentNumber(saved.apartmentNumber || "");
-      setPhone(saved.phone || "");
-    }
-  }, [user]);
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!cmnd) {
-      setError("CMND không hợp lệ.");
-      return;
-    }
-
-    // load users
-    let users = [];
+  const fetchUserProfile = async () => {
     try {
-      const raw = localStorage.getItem("users");
-      users = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(users)) users = [];
+      setLoading(true);
+      setError('');
+      
+      const userId = sessionStorage.getItem('userID');
+      
+      if (!userId) {
+        setError('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get(`${API_URL}/user/my-profile`, {
+        params: { userId }
+      });
+
+      if (response.data && response.data.user) {
+        const user = response.data.user;
+        setUserData({
+          identification: user.identification || '',
+          name: user.name || '',
+          phone: user.phone || '',
+          address: user.address || '',
+          dob: user.dob ? new Date(user.dob).toISOString().split('T')[0] : '',
+        });
+      }
     } catch (err) {
-      users = [];
+      const errorMessage =
+        err.response?.data?.message ||
+        'Không thể tải thông tin người dùng. Vui lòng thử lại.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
-
-    // find and update
-    const idx = users.findIndex((u) => String(u.cmnd) === String(cmnd));
-    if (idx === -1) {
-      setError("Người dùng không tìm thấy trong hệ thống.");
-      return;
-    }
-
-    const updated = { ...users[idx] };
-    if (name) updated.name = name;
-    if (password) updated.password = password;
-    updated.apartmentNumber = apartmentNumber;
-    updated.phone = phone;
-    users[idx] = updated;
-
-    localStorage.setItem("users", JSON.stringify(users));
-
-    const newCurrent = { cmnd: updated.cmnd, name: updated.name, apartmentNumber: updated.apartmentNumber, phone: updated.phone };
-    localStorage.setItem("currentUser", JSON.stringify(newCurrent));
-    login(newCurrent);
-
-    setToast("Cập nhật thông tin thành công.");
-    setPassword("");
-    setTimeout(() => setToast(""), 2000);
   };
 
+  const handlePhoneChange = (e) => {
+    setUserData({ ...userData, phone: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setSaving(true);
+
+    try {
+      const response = await axios.patch(`${API_URL}/user/update-profile`, {
+        identification: userData.identification,
+        phone: userData.phone,
+      });
+
+      if (response.data) {
+        setSuccess('Cập nhật thông tin thành công!');
+        // Cập nhật lại dữ liệu từ server
+        await fetchUserProfile();
+        setTimeout(() => setSuccess(''), 3000);
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        'Không thể cập nhật thông tin. Vui lòng thử lại.';
+      setError(errorMessage);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleOpenPassPopup = () => {
+    setShowPassPopup(true);
+  };
+
+  const handleClosePassPopup = () => {
+    setShowPassPopup(false);
+    setPassChangeError('');
+    setPassChangeLoading(false);
+  };
+
+  const handlePasswordChange = async (formData) => {
+    setPassChangeError('');
+    setPassChangeLoading(true);
+
+    // Validation
+    if (!formData.currentPassword || !formData.newPassword) {
+      setPassChangeError('Vui lòng nhập đầy đủ thông tin.');
+      setPassChangeLoading(false);
+      return;
+    }
+
+    if (formData.newPassword.length < 6) {
+      setPassChangeError('Mật khẩu mới phải có ít nhất 6 ký tự.');
+      setPassChangeLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.patch(`${API_URL}/user/update-profile`, {
+        identification: formData.identification,
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+      });
+
+      if (response.data) {
+        setShowPassPopup(false);
+        setSuccess('Đổi mật khẩu thành công!');
+        setPassChangeError('');
+        setTimeout(() => setSuccess(''), 3000);
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        'Không thể đổi mật khẩu. Vui lòng thử lại.';
+      setPassChangeError(errorMessage);
+    } finally {
+      setPassChangeLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="profile-page">
+        <div className="profile-container">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Đang tải thông tin...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={styles.page}>
-      <form style={styles.card} onSubmit={handleSave}>
-        <h2 style={styles.title}>Hồ sơ cư dân</h2>
+    <div className="profile-page">
+      <div className="profile-container">
+        <div className="profile-card">
+          <div className="profile-header">
+            <h2 className="profile-title">Thông tin cá nhân</h2>
+            <p className="profile-subtitle">Quản lý thông tin tài khoản của bạn</p>
+          </div>
 
-        {error && <div style={styles.error}>{error}</div>}
-        {toast && <div style={styles.toast}>{toast}</div>}
+          {error && (
+            <div className="profile-error">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
 
-        <label style={styles.label}>CMND / CCCD</label>
-        <input style={styles.input} value={cmnd} onChange={(e) => setCmnd(e.target.value)} disabled />
+          {success && (
+            <div className="profile-success">
+              <span className="success-icon">✓</span>
+              <span>{success}</span>
+            </div>
+          )}
 
-        <label style={styles.label}>Họ tên</label>
-        <input style={styles.input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Tên người dùng" />
+          <form onSubmit={handleSubmit} className="profile-form">
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">🆔</span>
+                CCCD / CMND
+              </label>
+              <input
+                className="form-input"
+                type="text"
+                value={userData.identification}
+                disabled
+                readOnly
+              />
+            </div>
 
-        <label style={styles.label}>Mật khẩu</label>
-        <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Để trống nếu không đổi" />
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">👤</span>
+                Họ và tên
+              </label>
+              <input
+                className="form-input"
+                type="text"
+                value={userData.name}
+                disabled
+                readOnly
+              />
+            </div>
 
-        <label style={styles.label}>Số căn hộ</label>
-        <input style={styles.input} value={apartmentNumber} onChange={(e) => setApartmentNumber(e.target.value)} />
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">📱</span>
+                Số điện thoại
+              </label>
+              <input
+                className="form-input editable"
+                type="text"
+                value={userData.phone}
+                onChange={handlePhoneChange}
+                placeholder="Nhập số điện thoại"
+                disabled={saving}
+              />
+            </div>
 
-        <label style={styles.label}>Số điện thoại</label>
-        <input style={styles.input} value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">📍</span>
+                Địa chỉ
+              </label>
+              <input
+                className="form-input"
+                type="text"
+                value={userData.address || ''}
+                disabled
+                readOnly
+              />
+            </div>
 
-        <button type="submit" style={styles.button}>Lưu thay đổi</button>
-      </form>
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">📅</span>
+                Ngày sinh
+              </label>
+              <input
+                className="form-input"
+                type="date"
+                value={userData.dob}
+                disabled
+                readOnly
+              />
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="submit"
+                className="save-button"
+                disabled={saving}
+              >
+                {saving ? (
+                  <>
+                    <span className="button-spinner">⏳</span>
+                    Đang lưu...
+                  </>
+                ) : (
+                  <>
+                    <span className="button-icon">💾</span>
+                    Lưu thay đổi
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                className="change-password-button"
+                onClick={handleOpenPassPopup}
+              >
+                <span className="button-icon">🔒</span>
+                Đổi mật khẩu
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {showPassPopup && (
+        <PassPopup
+          identification={userData.identification}
+          phone={userData.phone}
+          onClose={handleClosePassPopup}
+          onSubmit={handlePasswordChange}
+          loading={passChangeLoading}
+          error={passChangeError}
+        />
+      )}
     </div>
   );
-};
-
-const styles = {
-  page: {
-    minHeight: "70vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    background: "#f8fafc",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 720,
-    padding: 28,
-    borderRadius: 12,
-    boxShadow: "0 10px 30px rgba(79,70,229,0.06)",
-    background: "#fff",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 16,
-    border: "1px solid rgba(79,70,229,0.04)",
-  },
-  title: { gridColumn: "1 / -1", margin: 0, marginBottom: 6, color: "#111827" },
-  label: { fontSize: 13, color: "#374151", marginBottom: 6 },
-  input: { padding: "10px 12px", borderRadius: 8, border: "1px solid #e6e6f2", outline: "none", fontSize: 14, background: "#fff" },
-  button: { gridColumn: "1 / -1", marginTop: 8, padding: "10px 14px", borderRadius: 10, background: "#4F46E5", color: "#fff", border: "none", cursor: "pointer", fontSize: 15 },
-  error: { gridColumn: "1 / -1", background: "#fee2e2", color: "#b91c1c", padding: "8px 10px", borderRadius: 6, fontSize: 13 },
-  toast: { gridColumn: "1 / -1", background: "#eef2ff", color: "#3730a3", padding: "8px 10px", borderRadius: 6, fontSize: 13 },
 };
 
 export default Profile;

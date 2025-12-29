@@ -1,0 +1,36 @@
+.app-header{
+  position: fixed;
+  top: 0;
+  left: 240px; /* align with fixed sidebar width */
+  right: 0;
+  height: 160px; /* increased so full header image is visible */
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px 8px 12px;
+  background-image: url("../../assets/header.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+  z-index: 14;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.header-ring{
+  position: absolute;
+  right: 12px; /* near the right edge of header */
+  top: 12px; /* near the top of header */
+  width: 28px; /* notification-size */
+  height: 28px;
+  object-fit: contain;
+  z-index: 16;
+}
+
+.header-spacer{ flex: 1 }
+
+@media (max-width: 768px){
+  .app-header{
+    left: 0;
+    top: 0;
+    height: 160px;
+  }
+}

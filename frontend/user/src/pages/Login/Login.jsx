@@ -1,160 +1,150 @@
-import React, { useState } from "react";
-import { useAuth } from "../../components/Context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Login.css";
 
 const Login = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
-  const [cmnd, setCmnd] = useState("");
+  const [identification, setIdentification] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  // Kiểm tra nếu đã đăng nhập thì redirect
+  useEffect(() => {
+    const isAuth = sessionStorage.getItem("isAuth");
+    if (isAuth) {
+      navigate("/profile", { replace: true });
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setToast("");
+    setLoading(true);
 
-    if (!cmnd || !password) {
-      setError("Vui lòng nhập CMND và mật khẩu.");
+    // Validation
+    if (!identification || !password) {
+      setError("Vui lòng nhập đầy đủ thông tin.");
+      setLoading(false);
       return;
     }
 
-    let users = [];
     try {
-      const raw = localStorage.getItem("users");
-      users = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(users)) users = [];
+      // Gọi API login
+      const response = await axios.post(`${API_URL}/auth/login`, {
+        identification,
+        password,
+      });
+
+      if (response.data && response.data.user) {
+        // Lưu userID vào sessionStorage
+       sessionStorage.setItem("isAuth", "true");
+       sessionStorage.setItem("userID", response.data.user.id);
+        
+      
+          setToast("Đăng nhập thành công! Đang chuyển hướng...");
+          
+          // Chuyển hướng sau 1 giây
+          setTimeout(() => {
+            navigate("/profile", { replace: true });
+          }, 1000);
+      } else {
+        setError("Đăng nhập thất bại. Vui lòng thử lại.");
+      }
     } catch (err) {
-      users = [];
+      // Xử lý lỗi từ API
+      const errorMessage =
+        err.response?.data?.message ||
+        "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
-
-    const matched = users.find(
-      (u) => String(u.cmnd) === String(cmnd) && String(u.password) === String(password)
-    );
-
-    if (!matched) {
-      setError("CMND hoặc mật khẩu không đúng.");
-      return;
-    }
-
-    // Save currentUser and update context
-    const currentUser = { cmnd: matched.cmnd, apartmentNumber: matched.apartmentNumber, phone: matched.phone };
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
-    login(currentUser);
-
-    setToast("Đăng nhập thành công! Đang chuyển tới trang hồ sơ...");
-
-    setTimeout(() => {
-      navigate("/profile");
-    }, 700);
   };
 
   return (
-    <div style={styles.page}>
-      <form onSubmit={handleSubmit} style={styles.card}>
-        <h2 style={styles.title}>Đăng nhập cư dân</h2>
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-header">
+            <h2 className="login-title">Đăng nhập cư dân</h2>
+            <p className="login-subtitle">Nhập thông tin để truy cập hệ thống</p>
+          </div>
 
-        {error && <div style={styles.error}>{error}</div>}
-        {toast && <div style={styles.toast}>{toast}</div>}
+          {error && (
+            <div className="login-error">
+              <span className="error-icon">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
 
-        <label style={styles.label}>CMND / CCCD</label>
-        <input
-          style={styles.input}
-          value={cmnd}
-          onChange={(e) => setCmnd(e.target.value)}
-          placeholder="Nhập CMND/CCCD"
-        />
+          {toast && (
+            <div className="login-toast">
+              <span className="toast-icon">✓</span>
+              <span>{toast}</span>
+            </div>
+          )}
 
-        <label style={styles.label}>Mật khẩu</label>
-        <input
-          style={styles.input}
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mật khẩu"
-        />
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">🆔</span>
+                CCCD / CMND
+              </label>
+              <input
+                className="form-input"
+                type="text"
+                value={identification}
+                onChange={(e) => setIdentification(e.target.value)}
+                placeholder="Nhập số CCCD/CMND"
+                disabled={loading}
+                autoComplete="username"
+              />
+            </div>
 
-        <button type="submit" style={styles.button}>
-          Đăng nhập
-        </button>
-        <div style={styles.footerText}>
-          Chưa có tài khoản? <Link to="/register" style={styles.link}>Đăng ký</Link>
+            <div className="form-group">
+              <label className="form-label">
+                <span className="label-icon">🔒</span>
+                Mật khẩu
+              </label>
+              <input
+                className="form-input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Nhập mật khẩu"
+                disabled={loading}
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="button-spinner">⏳</span>
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <span className="button-icon">→</span>
+                  Đăng nhập
+                </>
+              )}
+            </button>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
-};
-
-const styles = {
-  page: {
-    minHeight: "80vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "24px",
-    background: "#f8fafc",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 420,
-    padding: 28,
-    borderRadius: 12,
-    boxShadow: "0 10px 30px rgba(79,70,229,0.12)",
-    display: "flex",
-    flexDirection: "column",
-    background: "#fff",
-    border: "1px solid rgba(79,70,229,0.06)",
-  },
-  title: { margin: "0 0 14px", textAlign: "center", color: "#111827" },
-  label: { fontSize: 14, marginTop: 10, marginBottom: 6, color: "#374151" },
-  input: {
-    padding: "10px 12px",
-    borderRadius: 8,
-    border: "1px solid #e6e6f2",
-    outline: "none",
-    fontSize: 14,
-    background: "#fbfdff",
-  },
-  button: {
-    marginTop: 18,
-    padding: "10px 12px",
-    borderRadius: 8,
-    background: "#4F46E5",
-    color: "#fff",
-    border: "none",
-    cursor: "pointer",
-    fontSize: 15,
-    boxShadow: "0 6px 18px rgba(79,70,229,0.18)",
-  },
-  error: {
-    background: "#fee2e2",
-    color: "#b91c1c",
-    padding: "8px 10px",
-    borderRadius: 6,
-    marginBottom: 8,
-    fontSize: 13,
-  },
-  toast: {
-    background: "#eef2ff",
-    color: "#3730a3",
-    padding: "8px 10px",
-    borderRadius: 6,
-    marginBottom: 8,
-    fontSize: 13,
-  },
-  footerText: {
-    marginTop: 12,
-    textAlign: "center",
-    fontSize: 14,
-    color: "#6b7280",
-  },
-  link: {
-    color: "#4F46E5",
-    textDecoration: "none",
-    fontWeight: 600,
-    marginLeft: 6,
-  },
 };
 
 export default Login;

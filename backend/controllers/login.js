@@ -21,10 +21,10 @@ export const login = async (req, res) => {
       });
     }
 
-    // 3. So sánh mật khẩu
-    const isMatch = await bcrypt.compare(password, user.password);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    if (!isMatch) {
+    if (!hashedPassword === user.password) {
       return res.status(401).json({
         message: "Thông tin đăng nhập không đúng",
       });

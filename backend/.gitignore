@@ -40,3 +40,4 @@ data/
 
 # Sensitive configuration files
 config/
+MONGO_URI=mongodb+srv://HoangThi:J8XfPlahTdbhTpZh@cluster0.ukmbcgd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

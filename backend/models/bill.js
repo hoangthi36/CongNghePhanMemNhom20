@@ -53,7 +53,7 @@ const billSchema = new mongoose.Schema({
   //Loai hoa don: dien, nuoc, rac, khac
   type: {
     type: String,
-    enum: ["electricity", "water", "garbage", "other"],
+    enum: ["electricity", "water", "garbage", "management", "parking", "other"],
     required: true,
   },
   //Mo ta chi tiet hoa don
@@ -64,6 +64,4 @@ const billSchema = new mongoose.Schema({
   billItem: [billItemSchema],
 });
 
-const Bill = mongoose.model("Bill", billSchema);
-
-export default Bill;
+export default mongoose.models.Bill || mongoose.model("Bill", billSchema);

@@ -1,28 +1,30 @@
-import { Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./components/Context/AuthContext.jsx";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login/Login.jsx";
-import Register from "./pages/Register/Register.jsx";
-import Home from "./pages/Home/Home.jsx";
+import Profile from "./pages/Profile/Profile.jsx";
+import Bills from "./pages/Bills/Bills.jsx";
+import Posts from "./pages/Posts/Posts.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
-import React from "react";  
-
+import Layout from "./components/Layout/Layout.jsx";
+import React from "react";
 
 export default function App() {
-return (
-<AuthProvider>
-<Routes>
-	<Route path="/" element={<Home />} />
-	<Route path="/login" element={<Login />} />
-	<Route path="/register" element={<Register />} />
-	<Route
-		path="/*"
-		element={
-			<ProtectedRoute>
-                <Home/>
-			</ProtectedRoute>
-		}
-	/>
-</Routes>
-</AuthProvider>
-);
+  return (
+    <Routes>
+      {/* Login - Trang đầu tiên */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Protected system - Chỉ truy cập được sau khi login */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Navigate to="/profile" replace />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/bills" element={<Bills />} />
+          <Route path="/posts" element={<Posts />} />
+        </Route>
+      </Route>
+
+      {/* Fallback - Redirect về login nếu chưa đăng nhập */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
 }

@@ -4,45 +4,44 @@ import HouseHold from "../models/houseHoldModel.js";
 // 1.Create a new household
 export const createHouseHold = async (req, res) => {
   try {
-    const { name, members, address } = req.body;
-    const identification = req.user.identification;
-    //Kem tra trung ten ho
+    const { name, address, identification_head } = req.body;
+    const identification = identification_head;
+
+    // Kiểm tra trùng tên hộ
     const existingHouseHold = await HouseHold.findOne({ namehousehold: name });
     if (existingHouseHold) {
       return res.status(400).json({ message: "Household name already exists" });
     }
-    //Kiem tra user da thuoc household chua
-    const userInfo = await User.findOne({ identification: identification });
 
-    // dam bao chu ho da ton tai
+    // Đảm bảo chủ hộ đã tồn tại
+    const userInfo = await User.findOne({ identification: identification });
     if (!userInfo) {
       return res.status(404).json({ message: "User not found" });
     }
-    //Neu da thuoc ho gia dinh thi khong duoc tao nua
+
+    // Nếu đã thuộc hộ gia đình thì không được tạo nữa
     if (userInfo.household) {
       return res
         .status(400)
-        .json({ message: "You already belongs to a household" });
+        .json({ message: "You already belong to a household" });
     }
 
-    //Validate thanh vien(cai members duoc cung cap phai co trong he thong)
-    if (members && !Array.isArray(members)) {
-      return res.status(400).json({ message: "Members should be an array" });
-    }
-    //Tao ho gia dinh moi
+    // Tạo hộ gia đình mới (chỉ có chủ hộ)
     const newHouseHold = new HouseHold({
       namehousehold: name,
       address: address,
       namehead: userInfo.name,
       identification_head: userInfo.identification,
-      members: members || [],
     });
-    //Luu document moi vao database
+
+    // Lưu document mới vào database
     const savedHouseHold = await newHouseHold.save();
-    // ***Chua xu ly duoc  doi sua sau***
+
+    // Cập nhật household cho chủ hộ
     await User.findByIdAndUpdate(userInfo._id, {
       household: savedHouseHold._id,
     });
+
     res.status(201).json(savedHouseHold);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -79,63 +78,216 @@ export const getAllHouseHolds = async (req, res) => {
 };
 
 //3.Update household
-export const updateHouseHold = async (req, res) => {
+// Thêm 1 thành viên(admin )
+
+export const addMemberToHouseHold = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const { name, members, address } = req.body;
-    const userInfo = await User.findById(userId);
-    if (!userInfo.household) {
+    const { houseHoldId, newMemberId, relationship, identification, name } =
+      req.body;
+
+    // 1. Kiểm tra household có tồn tại không
+    const houseHoldInfo = await HouseHold.findById(houseHoldId);
+    if (!houseHoldInfo) {
+      return res.status(404).json({ message: "Household not found" });
+    }
+
+    // 2. Kiểm tra user muốn thêm có tồn tại không
+    const newMember = await User.findById(newMemberId);
+    if (!newMember) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 3. Kiểm tra user đã thuộc hộ nào chưa
+    if (newMember.household) {
+      return res.status(400).json({
+        message: "User already belongs to another household",
+      });
+    }
+
+    // 4. Thêm user vào hộ
+    newMember.household = houseHoldId;
+    await newMember.save();
+
+    // 5. Thêm vào mảng members của household với đầy đủ thông tin
+    if (houseHoldInfo.members) {
+      houseHoldInfo.members.push({
+        _id: newMemberId,
+        name: name || newMember.name, // Ưu tiên name từ request, fallback sang name từ User
+        identification: identification,
+        relationship: relationship,
+      });
+      await houseHoldInfo.save();
+    }
+
+    res.status(200).json({
+      message: "Member added successfully",
+      household: {
+        id: houseHoldInfo._id,
+        identification_head: houseHoldInfo.identification_head,
+      },
+      newMember: {
+        id: newMember._id,
+        name: name || newMember.name,
+        relationship: relationship,
+        identification: identification,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// xóa 1 cháu khỏi hộ (cũng admin)
+
+export const removeMemberFromHouseHold = async (req, res) => {
+  try {
+    const { memberId } = req.body; // hoặc req.params
+
+    // Kiểm tra member có tồn tại không
+    const memberToRemove = await User.findById(memberId);
+    if (!memberToRemove) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    // Kiểm tra member có thuộc hộ nào không
+    if (!memberToRemove.household) {
       return res
-        .status(404)
-        .json({ message: "You do not belong to any household" });
+        .status(400)
+        .json({ message: "This user does not belong to any household" });
     }
-    const houseHoldInfo = await HouseHold.findById(userInfo.household);
-    if (houseHoldInfo.namehead !== userInfo.name) {
-      return res
-        .status(403)
-        .json({ message: "Only the head of household can update household" });
+
+    const houseHoldInfo = await HouseHold.findById(memberToRemove.household);
+
+    // Không cho phép xóa chủ hộ
+    if (houseHoldInfo && memberToRemove.name === houseHoldInfo.namehead) {
+      return res.status(400).json({
+        message:
+          "Cannot remove the head of household. Please transfer ownership first or delete the household.",
+      });
     }
-    if (name) houseHoldInfo.namehousehold = name;
-    if (address) houseHoldInfo.address = address;
-    if (members) {
-      if (!Array.isArray(members)) {
-        return res.status(400).json({ message: "Members should be an array" });
-      }
-      houseHoldInfo.members = members;
+
+    // Lưu thông tin để trả về
+    const householdId = memberToRemove.household;
+    const memberName = memberToRemove.name;
+
+    // Xóa household khỏi member
+    await User.findByIdAndUpdate(memberId, {
+      $unset: { household: "" },
+    });
+
+    // Xóa khỏi array members nếu có
+    if (
+      houseHoldInfo &&
+      houseHoldInfo.members &&
+      Array.isArray(houseHoldInfo.members)
+    ) {
+      houseHoldInfo.members = houseHoldInfo.members.filter(
+        (m) => m.toString() !== memberId.toString()
+      );
+      await houseHoldInfo.save();
     }
-    const updatedHouseHold = await houseHoldInfo.save();
-    res.status(200).json(updatedHouseHold);
+
+    res.status(200).json({
+      message: "Member removed successfully",
+      removedMember: memberName,
+      household: houseHoldInfo?.namehead,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 //4.Delete household
+// Xóa sạch household và cập nhật thông tin user
 export const deleteHouseHold = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const userInfo = await User.findById(userId);
-    //Kiem tra co phai chu ho khong
-    if (!userInfo.household) {
-      return res
-        .status(404)
-        .json({ message: "You do not belong to any household" });
+    const { householdId } = req.params;
+
+    // Kiểm tra household có tồn tại không
+    const houseHoldInfo = await HouseHold.findById(householdId);
+    if (!houseHoldInfo) {
+      return res.status(404).json({ message: "Household not found" });
     }
-    //Chi chu ho moi duoc xoa ho gia dinh
-    const houseHoldInfo = await HouseHold.findById(userInfo.household);
-    if (houseHoldInfo.namehead !== userInfo.name) {
-      return res
-        .status(403)
-        .json({ message: "Only the head of household can delete household" });
-    }
-    //Xoa household
-    await HouseHold.findByIdAndDelete(userInfo.household);
-    //Xoa household trong thong tin user
+
+    // Đếm số thành viên trong hộ
+    const memberCount = await User.countDocuments({
+      household: householdId,
+    });
+
+    // Xóa household
+    await HouseHold.findByIdAndDelete(householdId);
+
+    // Xóa household trong thông tin user
     await User.updateMany(
-      { household: userInfo.household },
+      { household: householdId },
       { $unset: { household: "" } }
     );
-    res.status(200).json({ message: "Household deleted successfully" });
+
+    res.status(200).json({
+      message: "Household deleted successfully",
+      householdName: houseHoldInfo.namehead,
+      affectedMembers: memberCount,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Xử lý khi chủ hộ bị xóa hoặc rời khỏi hộ
+
+export const handleHeadRemoval = async (req, res) => {
+  try {
+    const { householdId } = req.params;
+
+    const houseHoldInfo = await HouseHold.findById(householdId);
+    if (!houseHoldInfo) {
+      return res.status(404).json({
+        message: "Household not found",
+      });
+    }
+
+    // Tìm tất cả thành viên còn lại (trừ chủ hộ cũ)
+    const remainingMembers = await User.find({
+      household: householdId,
+      name: { $ne: houseHoldInfo.namehead },
+    }).sort({ createdAt: 1 });
+
+    if (remainingMembers.length === 0) {
+      // Không còn thành viên nào -> Xóa hộ
+      await HouseHold.findByIdAndDelete(householdId);
+      return res.status(200).json({
+        message: "Household deleted - no members remaining",
+        deletedHousehold: houseHoldInfo.namehead,
+      });
+    }
+
+    // Có thành viên còn lại -> Chuyển quyền cho người đầu tiên
+    const newHead = remainingMembers[0];
+    await HouseHold.findByIdAndUpdate(householdId, {
+      namehead: newHead.name,
+    });
+
+    res.status(200).json({
+      message: "Household head transferred successfully",
+      oldHead: houseHoldInfo.namehead,
+      newHead: newHead.name,
+      remainingMembers: remainingMembers.length,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//5. Thông kê số hộ gia đình
+
+export const getHouseHoldStatistics = async (req, res) => {
+  try {
+    const totalHouseholds = await HouseHold.countDocuments();
+
+    res.status(200).json({
+      message: "Total households retrieved successfully",
+      totalHouseholds: totalHouseholds,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

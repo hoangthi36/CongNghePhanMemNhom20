@@ -1,5 +1,5 @@
 import HouseHold from "../models/houseHoldModel.js";
-import Transaction from "../models/Transaction.js";
+import Transaction from "../models/transaction.js";
 import Bill from "../models/bill.js";
 
 //I.Create transaction

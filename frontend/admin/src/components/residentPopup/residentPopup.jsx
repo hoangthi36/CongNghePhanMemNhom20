@@ -118,7 +118,7 @@ const ResidentPopup = ({ isOpen, onClose, onSubmit }) => {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              placeholder="Ví dụ: 12 Nguyen Trai, Ha Noi"
+              placeholder="Ví dụ: P101"
               className={errors.address ? 'error' : ''}
             />
             {errors.address && <span className="error-message">{errors.address}</span>}
@@ -132,7 +132,7 @@ const ResidentPopup = ({ isOpen, onClose, onSubmit }) => {
               name="identification_head"
               value={formData.identification_head}
               onChange={handleChange}
-              placeholder="Ví dụ: ID1001"
+              placeholder="Ví dụ: 123456789"
               className={errors.identification_head ? 'error' : ''}
             />
             {errors.identification_head && <span className="error-message">{errors.identification_head}</span>}

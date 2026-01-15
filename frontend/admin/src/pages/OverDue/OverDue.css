@@ -1,0 +1,406 @@
+.overdue-page {
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.overdue-header {
+  margin-bottom: 24px;
+}
+
+.overdue-header h1 {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.date-filter-bar {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.date-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filter-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.date-select {
+  padding: 10px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 150px;
+}
+
+.date-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.date-select:hover {
+  border-color: #667eea;
+}
+
+.loading-indicator {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.error-state {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error-state p {
+  color: #e74c3c;
+  font-size: 16px;
+  margin: 0;
+}
+
+.empty-state {
+  background: white;
+  border-radius: 12px;
+  padding: 48px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h2 {
+  color: #333;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.summary-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 20px;
+  color: #667eea;
+  font-weight: 700;
+}
+
+.bill-types-section {
+  margin-bottom: 24px;
+}
+
+.bill-types-section h2 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bill-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.bill-type-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.bill-type-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
+}
+
+.bill-type-card.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+}
+
+.bill-type-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bill-type-icon {
+  font-size: 32px;
+}
+
+.bill-type-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bill-type-card.active .bill-type-name {
+  color: white;
+}
+
+.bill-type-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.bill-type-card.active .stat-item {
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.bill-type-card.active .stat-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-value {
+  font-size: 16px;
+  color: #333;
+  font-weight: 700;
+}
+
+.bill-type-card.active .stat-value {
+  color: white;
+}
+
+.households-section {
+  margin-top: 32px;
+}
+
+.households-section h2 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.households-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.household-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.household-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.household-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.household-header h3 {
+  color: #333;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.multiple-bills-badge {
+  background: #ff6b6b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.household-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.household-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.household-info-row.highlight {
+  background: #f0f4ff;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 4px 0;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+}
+
+.info-value.amount {
+  color: #667eea;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.info-value.overdue-days {
+  color: #e74c3c;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .overdue-page {
+    padding: 16px;
+  }
+
+  .overdue-header h1 {
+    font-size: 24px;
+  }
+
+  .date-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .date-filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .date-select {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-types-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .households-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -360,3 +360,141 @@ export const getBillsByHouseholdId = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// 8. Thống kê các hộ quá hạn theo loại hóa đơn
+export const getOverdueHouseholdsByBillType = async (req, res) => {
+  try {
+    const { year, month } = req.query;
+    const currentDate = new Date();
+
+    const pipeline = [
+      // 1. Unwind billItem array
+      { $unwind: "$billItem" },
+
+      // 2. Filter: Chưa thanh toán + Quá hạn
+      {
+        $match: {
+          "billItem.status": false,
+          "billItem.dueDate": { $lt: currentDate },
+        },
+      },
+    ];
+
+    // 3. Filter theo tháng/năm (nếu có)
+    if (year && month) {
+      const yearNum = parseInt(year);
+      const monthNum = parseInt(month);
+
+      if (monthNum < 1 || monthNum > 12) {
+        return res
+          .status(400)
+          .json({ message: "Month must be between 1 and 12" });
+      }
+
+      pipeline.push({
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: [{ $year: "$billItem.createdAt" }, yearNum] },
+              { $eq: [{ $month: "$billItem.createdAt" }, monthNum] },
+            ],
+          },
+        },
+      });
+    }
+
+    // 4. Pipeline hoàn chỉnh
+    pipeline.push(
+      // Group theo household + bill type
+      {
+        $group: {
+          _id: {
+            householdId: "$houseHold",
+            billType: "$type",
+          },
+          totalOverdueAmount: { $sum: "$billItem.amount" },
+          overdueCount: { $sum: 1 },
+          latestDueDate: { $max: "$billItem.dueDate" },
+        },
+      },
+
+      // Lookup household info
+      {
+        $lookup: {
+          from: HouseHold.collection.name, //  Tên collection tự động
+          localField: "_id.householdId",
+          foreignField: "_id",
+          as: "household",
+        },
+      },
+      { $unwind: "$household" },
+
+      // Project kết quả
+      {
+        $project: {
+          householdName: "$household.namehousehold",
+          identification_head: "$household.identification_head",
+          address: "$household.address",
+          billType: "$_id.billType",
+          totalOverdueAmount: 1,
+          overdueCount: 1,
+          latestDueDate: 1,
+          daysOverdue: {
+            $round: [
+              {
+                $divide: [
+                  { $subtract: [currentDate, "$latestDueDate"] },
+                  1000 * 60 * 60 * 24,
+                ],
+              },
+              1,
+            ],
+          },
+        },
+      },
+
+      // Group theo billType để có danh sách
+      {
+        $group: {
+          _id: "$billType",
+          billType: { $first: "$billType" },
+          households: { $push: "$$ROOT" },
+          totalOverdueAmount: { $sum: "$totalOverdueAmount" },
+          totalHouseholds: { $sum: 1 },
+          totalOverdueItems: { $sum: "$overdueCount" },
+        },
+      },
+
+      { $sort: { totalOverdueAmount: -1 } }
+    );
+
+    const result = await Bill.aggregate(pipeline);
+
+    // Tính tổng hợp
+    const grandTotal = result.reduce(
+      (sum, item) => sum + item.totalOverdueAmount,
+      0
+    );
+    const totalHouseholds = result.reduce(
+      (sum, item) => sum + item.totalHouseholds,
+      0
+    );
+
+    res.status(200).json({
+      message: "Overdue households by bill type",
+      period:
+        year && month
+          ? { year: parseInt(year), month: parseInt(month) }
+          : "All time",
+      summary: {
+        totalOverdueAmount: grandTotal,
+        totalHouseholds: totalHouseholds,
+        totalBillTypes: result.length,
+      },
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};

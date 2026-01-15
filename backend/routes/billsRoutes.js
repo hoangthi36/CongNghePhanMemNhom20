@@ -7,6 +7,7 @@ import {
   getSpecificMonthRevenue,
   countHouseholdsWithUnpaidBills,
   getBillsByHouseholdId,
+  getOverdueHouseholdsByBillType,
 } from "../controllers/billControllers.js";
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get("/get-bills", getAllBills);
 router.patch("/update-bill-item/:billId/:billItemId", updateBillItemStatus);
 router.get("/revenue/specific-month", getSpecificMonthRevenue);
 router.get("/count-unpaid-households", countHouseholdsWithUnpaidBills);
+router.get("/overdue-households", getOverdueHouseholdsByBillType);
 
 export default router;

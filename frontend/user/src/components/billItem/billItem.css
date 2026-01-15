@@ -126,6 +126,26 @@
   font-weight: 600;
 }
 
+.bill-item-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #374151;
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .bill-item-card {

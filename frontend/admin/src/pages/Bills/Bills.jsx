@@ -11,6 +11,9 @@ const Bills = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [searchId, setSearchId] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'paid', 'unpaid'
+  const [typeFilter, setTypeFilter] = useState('all'); // 'all', 'electricity', 'water', 'garbage', 'management', 'parking', 'other'
+  const [monthFilter, setMonthFilter] = useState('');
+  const [yearFilter, setYearFilter] = useState('');
   const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
   const headerMenuRef = useRef(null);
 
@@ -38,7 +41,7 @@ const Bills = () => {
 
   useEffect(() => {
     filterBills();
-  }, [bills, statusFilter, searchId]);
+  }, [bills, statusFilter, searchId, typeFilter, monthFilter, yearFilter]);
 
   const fetchBills = async () => {
     try {
@@ -66,6 +69,11 @@ const Bills = () => {
       );
     }
 
+    // Filter by type
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(bill => bill.type === typeFilter);
+    }
+
     // Filter by status
     if (statusFilter !== 'all') {
       const isPaid = statusFilter === 'paid';
@@ -77,6 +85,35 @@ const Bills = () => {
         return null;
       }).filter(bill => bill !== null);
     }
+
+    // Filter by month and year based on createdAt
+    filtered = filtered.map(bill => {
+      const filteredItems = bill.billItem.filter(item => {
+        if (!item.createdAt) return true;
+        
+        const itemDate = new Date(item.createdAt);
+        const itemMonth = itemDate.getMonth() + 1; // getMonth() returns 0-11
+        const itemYear = itemDate.getFullYear();
+
+        let matchesMonth = true;
+        let matchesYear = true;
+
+        if (monthFilter && monthFilter !== '') {
+          matchesMonth = itemMonth === parseInt(monthFilter);
+        }
+
+        if (yearFilter && yearFilter !== '') {
+          matchesYear = itemYear === parseInt(yearFilter);
+        }
+
+        return matchesMonth && matchesYear;
+      });
+
+      if (filteredItems.length > 0) {
+        return { ...bill, billItem: filteredItems };
+      }
+      return null;
+    }).filter(bill => bill !== null);
 
     setFilteredBills(filtered);
   };
@@ -129,6 +166,32 @@ const Bills = () => {
   const handleStatusFilter = (filter) => {
     setStatusFilter(filter);
     setHeaderMenuOpen(false);
+  };
+
+  const handleTypeFilter = (type) => {
+    setTypeFilter(type);
+  };
+
+  // Get current year and month for defaults
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  
+  // Generate year options (last 5 years and next 2 years)
+  const yearOptions = [];
+  for (let i = currentYear - 5; i <= currentYear + 2; i++) {
+    yearOptions.push(i);
+  }
+
+  const getBillTypeLabel = (type) => {
+    const labels = {
+      electricity: 'Điện',
+      water: 'Nước',
+      garbage: 'Rác',
+      management: 'Quản lý',
+      parking: 'Gửi xe',
+      other: 'Khác'
+    };
+    return labels[type] || type;
   };
 
   // Flatten bills to show all billItems
@@ -200,6 +263,90 @@ const Bills = () => {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Filter bar for type, month, and year */}
+        <div className="filters-bar">
+          <div className="type-filters">
+            <button
+              className={`type-filter-btn ${typeFilter === 'all' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('all')}
+            >
+              Tất cả
+            </button>
+            <button
+              className={`type-filter-btn ${typeFilter === 'electricity' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('electricity')}
+            >
+              ⚡ Điện
+            </button>
+            <button
+              className={`type-filter-btn ${typeFilter === 'water' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('water')}
+            >
+              💧 Nước
+            </button>
+            <button
+              className={`type-filter-btn ${typeFilter === 'garbage' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('garbage')}
+            >
+              🗑️ Rác
+            </button>
+            <button
+              className={`type-filter-btn ${typeFilter === 'management' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('management')}
+            >
+              🏢 Quản lý
+            </button>
+            <button
+              className={`type-filter-btn ${typeFilter === 'parking' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('parking')}
+            >
+              🚗 Gửi xe
+            </button>
+            <button
+              className={`type-filter-btn ${typeFilter === 'other' ? 'active' : ''}`}
+              onClick={() => handleTypeFilter('other')}
+            >
+              📄 Khác
+            </button>
+          </div>
+
+          <div className="date-filters">
+            <div className="date-filter-group">
+              <label htmlFor="month-filter">Tháng:</label>
+              <select
+                id="month-filter"
+                className="date-select"
+                value={monthFilter}
+                onChange={(e) => setMonthFilter(e.target.value)}
+              >
+                <option value="">Tất cả</option>
+                {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                  <option key={month} value={month}>
+                    Tháng {month}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="date-filter-group">
+              <label htmlFor="year-filter">Năm:</label>
+              <select
+                id="year-filter"
+                className="date-select"
+                value={yearFilter}
+                onChange={(e) => setYearFilter(e.target.value)}
+              >
+                <option value="">Tất cả</option>
+                {yearOptions.map(year => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>

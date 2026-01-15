@@ -1,0 +1,57 @@
+{
+    "message": "Overdue households by bill type",
+    "period": "All time",
+    "summary": {
+        "totalOverdueAmount": 72000,
+        "totalHouseholds": 2,
+        "totalBillTypes": 2
+    },
+    "data": [
+        {
+            "_id": "water",
+            "billType": "water",
+            "households": [
+                {
+                    "_id": {
+                        "householdId": "6960b384dda32bbffabf92b5",
+                        "billType": "water"
+                    },
+                    "totalOverdueAmount": 60000,
+                    "overdueCount": 1,
+                    "latestDueDate": "2026-01-15T00:00:00.000Z",
+                    "householdName": "Họ Nguyễn ",
+                    "identification_head": "123456780",
+                    "address": "P102",
+                    "billType": "water",
+                    "daysOverdue": 0
+                }
+            ],
+            "totalOverdueAmount": 60000,
+            "totalHouseholds": 1,
+            "totalOverdueItems": 1
+        },
+        {
+            "_id": "electricity",
+            "billType": "electricity",
+            "households": [
+                {
+                    "_id": {
+                        "householdId": "6960b2bcdda32bbffabf92a4",
+                        "billType": "electricity"
+                    },
+                    "totalOverdueAmount": 12000,
+                    "overdueCount": 1,
+                    "latestDueDate": "2026-01-15T00:00:00.000Z",
+                    "householdName": "Họ Cao ",
+                    "identification_head": "123456789",
+                    "address": "P101",
+                    "billType": "electricity",
+                    "daysOverdue": 0
+                }
+            ],
+            "totalOverdueAmount": 12000,
+            "totalHouseholds": 1,
+            "totalOverdueItems": 1
+        }
+    ]
+}

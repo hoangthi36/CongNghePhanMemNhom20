@@ -561,3 +561,64 @@ output:{
 "bills": []
 }
 ```
+
+## Các hộ quá hạn tương ứng với các loại hóa đơn
+
+```json
+http://localhost:5000/api/bills/overdue-households?year=2026&month=1
+Phương thức get kiểu req.query
+
+output:
+{
+    "message": "Overdue households by bill type",
+    "period": {
+        "year": 2026,
+        "month": 1
+    },
+    "summary": {
+        "totalOverdueAmount": 210000,
+        "totalHouseholds": 2,
+        "totalBillTypes": 1
+    },
+    "data": [
+        {
+            "_id": "parking",
+            "billType": "parking",
+            "households": [
+                {
+                    "_id": {
+                        "householdId": "695e9e2ed80f7876e915f45f",
+                        "billType": "parking"
+                    },
+                    "totalOverdueAmount": 140000,
+                    "overdueCount": 2,
+                    "latestDueDate": "2026-01-10T00:00:00.000Z",
+                    "householdName": "Ho Le ",
+                    "identification_head": "012345678933",
+                    "address": "Phường Hàng Bài, Quận Hoàn Kiếm, Hà Nội",
+                    "billType": "parking",
+                    "daysOverdue": 4.7
+                },
+                {
+                    "_id": {
+                        "householdId": "695e1a6db45f92e7d1481305",
+                        "billType": "parking"
+                    },
+                    "totalOverdueAmount": 70000,
+                    "overdueCount": 1,
+                    "latestDueDate": "2026-01-10T00:00:00.000Z",
+                    "householdName": "Ho Nguyen ",
+                    "identification_head": "012345678911",
+                    "address": "Phường Trúc Bạch, Quận Ba Đình, Hà Nội",
+                    "billType": "parking",
+                    "daysOverdue": 4.7
+                }
+            ],
+            "totalOverdueAmount": 210000,
+            "totalHouseholds": 2,
+            "totalOverdueItems": 3
+        }
+    ]
+}
+
+```

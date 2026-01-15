@@ -9,6 +9,8 @@ import Posts from "./pages/Posts/Posts.jsx";
 import Sidebar from "./components/Sidebar/Sidebar.jsx";
 // Bills
 import Bills from "./pages/Bills/Bills";
+// OverDue
+import OverDue from "./pages/OverDue/OverDue.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,6 +31,7 @@ function App() {
           <Route path="/residents" element={<Residents />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/bills" element={<Bills />} />
+          <Route path="/overdue" element={<OverDue />} />
           <Route path="/register" element={<RegisterUser />} />
             </>
           )}

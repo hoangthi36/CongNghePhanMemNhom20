@@ -9,6 +9,7 @@
       { path: "/register", label: "Đăng ký", icon: "📝" },
       { path: "/posts", label: "Bài đăng", icon: "📰" },
       { path: "/bills", label: "Hóa đơn", icon: "💰" },
+      { path: "/overdue", label: "Quá hạn", icon: "⚠️" },
     ];
 
     return (

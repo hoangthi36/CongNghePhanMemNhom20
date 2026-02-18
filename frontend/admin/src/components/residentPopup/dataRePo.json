@@ -1,0 +1,7 @@
+{
+    "name": "Nguyen Family",
+    "address": "123 Le Loi, HCM",
+    "members": [
+      { "identification": "ID002", "name": "Nguyen Van B", "relationship": "con" }
+    ]
+  }

@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "68efc1195ffbd315ee8eccf2",
+    "namehousehold": "Ho Nguyen",
+    "address": "12 Nguyen Trai, Ha Noi",
+    "namehead": "Nguyen Van A",
+    "identification_head": "ID1001",
+    "members": [
+      {
+        "_id": "6948bd797b63a1bacf3d0d3e",
+        "identification": "ID1001",
+        "name": "Nguyen Van A",
+        "relationship": "chu ho gia dinh"
+      },
+      {
+        "_id": "6948bd797b63a1bacf3d0d3e",
+        "identification": "ID1002",
+        "name": "Nguyen Thi B",
+        "relationship": "vo"
+      },
+      {
+        "_id": "6948bd797b63a1bacf3d0d3f",
+        "identification": "ID1003",
+        "name": "Nguyen Van C",
+        "relationship": "con"
+      }
+    ],
+    "__v": 0
+  }
+]

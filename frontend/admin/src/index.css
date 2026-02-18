@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background-color: #f9fafb;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #4f46e5;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+.sidebar a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.content {
+  flex: 1;
+  padding: 20px 20px 20px 12px;
+  background-color: #ffffff;
+}
+
+/* When the fixed admin sidebar is visible, offset the main content */
+.with-sidebar .content {
+  margin-left: 240px; /* sidebar width (220) + padding */
+}
+
+@media (max-width: 720px) {
+  /* Sidebar collapses to top bar on small screens — remove left margin and add top offset */
+  .with-sidebar .content {
+    margin-left: 0;
+    margin-top: 56px;
+  }
+}
+
+button {
+  padding: 6px 12px;
+  cursor: pointer;
+}

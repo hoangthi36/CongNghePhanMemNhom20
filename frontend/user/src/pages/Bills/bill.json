@@ -1,0 +1,51 @@
+{
+    "message": "Bills retrieved successfully",
+    "household": {
+      "id": "65a1c2d3e4f5678901234567",
+      "name": "Hộ gia đình Nguyễn Văn A",
+      "address": "Số 12, đường Trần Phú, Hà Nội",
+      "namehead": "Nguyễn Văn A"
+    },
+    "total": 2,
+    "bills": [
+      {
+        "_id": "66b1f9e0a123456789abcd01",
+        "houseHold": {
+          "_id": "65a1c2d3e4f5678901234567",
+          "namehousehold": "Hộ gia đình Nguyễn Văn A",
+          "identification_head": "012345678901",
+          "address": "Số 12, đường Trần Phú, Hà Nội"
+        },
+        "billItem": {
+          "electric": 350000,
+          "water": 120000,
+          "internet": 250000,
+          "other": 50000,
+          "createdAt": "2025-01-10T08:30:00.000Z"
+        },
+        "totalAmount": 770000,
+        "status": "paid",
+        "createdAt": "2025-01-10T08:30:00.000Z"
+      },
+      {
+        "_id": "66b1f9e0a123456789abcd02",
+        "houseHold": {
+          "_id": "65a1c2d3e4f5678901234567",
+          "namehousehold": "Hộ gia đình Nguyễn Văn A",
+          "identification_head": "012345678901",
+          "address": "Số 12, đường Trần Phú, Hà Nội"
+        },
+        "billItem": {
+          "electric": 300000,
+          "water": 100000,
+          "internet": 250000,
+          "other": 0,
+          "createdAt": "2024-12-10T08:30:00.000Z"
+        },
+        "totalAmount": 650000,
+        "status": "unpaid",
+        "createdAt": "2024-12-10T08:30:00.000Z"
+      }
+    ]
+  }
+  

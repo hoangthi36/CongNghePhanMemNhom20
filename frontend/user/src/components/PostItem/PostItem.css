@@ -1,0 +1,140 @@
+.post-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.post-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.post-card.pinned {
+  border-left: 4px solid #4299e1;
+  background: linear-gradient(to right, #ebf8ff 0%, white 5%);
+}
+
+.pinned-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #4299e1;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(66, 153, 225, 0.3);
+}
+
+.pinned-badge span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.post-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.post-title {
+  color: #1a202c;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.post-date {
+  color: #718096;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.post-content {
+  margin-bottom: 16px;
+}
+
+.post-content p {
+  color: #4a5568;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.post-image-container {
+  margin-top: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f7fafc;
+}
+
+.post-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  max-height: 500px;
+}
+
+@media (max-width: 768px) {
+  .post-card {
+    padding: 20px;
+  }
+
+  .post-title {
+    font-size: 20px;
+  }
+
+  .post-content p {
+    font-size: 15px;
+  }
+
+  .pinned-badge {
+    top: 12px;
+    right: 12px;
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

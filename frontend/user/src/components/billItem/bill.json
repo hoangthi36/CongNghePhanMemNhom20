@@ -1,0 +1,8 @@
+{
+  "billType": "Tiền điện",
+      "amount": 350000,
+      "status": "Đã thanh toán",
+      "billItem": {
+        "createdAt": "2025-01-02T10:30:00.000Z"
+      }
+    }
